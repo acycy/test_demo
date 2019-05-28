@@ -1,0 +1,2 @@
+pyClass  program is a testing demo for Python14 class;
+this is a readme for python class
