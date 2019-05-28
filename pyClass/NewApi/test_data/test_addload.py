@@ -7,6 +7,7 @@ from NewApi.common import project_path
 from NewApi.common.my_logger import MyLogger
 from NewApi.common.get_data import GetDate
 from NewApi.common.do_mysql import DoMysql
+from NewApi.common import get_data
 
 my_log = MyLogger()
 test_data = DoExcel(project_path.case_path, "addload").read_data("AddLoanCASE")
@@ -31,10 +32,13 @@ class TestCases(unittest.TestCase):
         url = case['Url']
 
         #替换load_id，此时已经查询到了我们之前的loanid
-        if case['Params'].find('loanid') != -1:
-            param = eval(case['Params'].replace('loanid', str(getattr(GetDate, 'LOAN_ID'))))  # 因为拿到的数据是int类型 replace只能用在字符串之间的替换 所以用str强转一下
-        else:
-            param = eval(case['Params'])  # 请求参数
+        # if case['Params'].find('loanid') != -1:
+        #    param = eval(case['Params'].replace('loanid', str(getattr(GetDate, 'LOAN_ID'))))
+        # else:
+        #     param = eval(case['Params'])  # 请求参数
+        #使用方法替换已有的load_id然后eval方法恢复成int类型
+        param = eval(get_data.replace(case['Params']))
+
 
         #发起测试
         my_log.info('-------正在测试{}模块里面第{}条测试用例：{}'.format(case['Module'],case['CaseId'],case['Title']))
@@ -52,7 +56,6 @@ class TestCases(unittest.TestCase):
         if resp.cookies:
             #COOKIES = resp.cookies
             setattr(GetDate,"COOKIES",resp.cookies)
-
         #进行断言写入数据
         TestResult = "None"
         try:
